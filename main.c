@@ -79,7 +79,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_ON(SEG_LF_PIN);
       GPIOx_PP_OFF(SEG_LG_PIN);
   }
-  if (c == '1') {
+  else if (c == '1') {
       GPIOx_PP_OFF(SEG_LA_PIN);
       GPIOx_PP_OFF(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -88,7 +88,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_ON(SEG_LF_PIN);
       GPIOx_PP_OFF(SEG_LG_PIN);
   }
-  if (c == '2' || c == 'Z') {
+  else if (c == '2' || c == 'Z') {
       GPIOx_PP_ON(SEG_LA_PIN);
       GPIOx_PP_OFF(SEG_LB_PIN);
       GPIOx_PP_OFF(SEG_LC_PIN);
@@ -97,7 +97,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_ON(SEG_LF_PIN);
       GPIOx_PP_ON(SEG_LG_PIN);
   }
-  if (c == '3') {
+  else if (c == '3') {
       GPIOx_PP_ON(SEG_LA_PIN);
       GPIOx_PP_OFF(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -106,7 +106,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_ON(SEG_LF_PIN);
       GPIOx_PP_ON(SEG_LG_PIN);
   }
-  if (c == '4') {
+  else if (c == '4') {
       GPIOx_PP_OFF(SEG_LA_PIN);
       GPIOx_PP_ON(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -115,7 +115,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_ON(SEG_LF_PIN);
       GPIOx_PP_ON(SEG_LG_PIN);
   }
-  if (c == '5' || c == 'S') {
+  else if (c == '5' || c == 'S') {
       GPIOx_PP_ON(SEG_LA_PIN);
       GPIOx_PP_ON(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -124,7 +124,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_OFF(SEG_LF_PIN);
       GPIOx_PP_ON(SEG_LG_PIN);
   }
-  if (c == '6') {
+  else if (c == '6') {
       GPIOx_PP_ON(SEG_LA_PIN);
       GPIOx_PP_ON(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -133,7 +133,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_OFF(SEG_LF_PIN);
       GPIOx_PP_ON(SEG_LG_PIN);
   }
-  if (c == '7') {
+  else if (c == '7') {
       GPIOx_PP_ON(SEG_LA_PIN);
       GPIOx_PP_ON(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -151,7 +151,7 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_ON(SEG_LF_PIN);
       GPIOx_PP_ON(SEG_LG_PIN);
   }
-  if (c == '9') {
+  else if (c == '9') {
       GPIOx_PP_ON(SEG_LA_PIN);
       GPIOx_PP_ON(SEG_LB_PIN);
       GPIOx_PP_ON(SEG_LC_PIN);
@@ -178,7 +178,10 @@ void draw_7s_digit(volatile char c,
       GPIOx_PP_OFF(SEG_LF_PIN);
       GPIOx_PP_OFF(SEG_LG_PIN);
   }
+  // (TODO)
   else if (c == 'c') {
+  }
+  else {
   }
 
   // Draw the decimal point if appropriate.
