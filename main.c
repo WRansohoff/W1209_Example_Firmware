@@ -3,6 +3,7 @@
 #define F_CPU     2000000UL
 
 // Register definitions.
+// GPIO
 #define GPIOA_ODR *(volatile uint8_t *)(0x5000)
 #define GPIOA_DDR *(volatile uint8_t *)(0x5002)
 #define GPIOA_CR1 *(volatile uint8_t *)(0x5003)
@@ -17,6 +18,13 @@
 #define GPIOD_IDR *(volatile uint8_t *)(0x5010)
 #define GPIOD_DDR *(volatile uint8_t *)(0x5011)
 #define GPIOD_CR1 *(volatile uint8_t *)(0x5012)
+// ADC
+#define ADC1_CSR  *(volatile uint8_t *)(0x5400)
+#define ADC1_CR1  *(volatile uint8_t *)(0x5401)
+#define ADC1_CR2  *(volatile uint8_t *)(0x5402)
+#define ADC1_DRH  *(volatile uint8_t *)(0x5404)
+#define ADC1_DRL  *(volatile uint8_t *)(0x5405)
+// GPIO Macros
 #define GPIOA_BASE      (0x5000)
 #define GPIOB_BASE      (0x5005)
 #define GPIOC_BASE      (0x500A)
@@ -64,7 +72,11 @@
 // Global constants.
 #define RELAY_MS    2000
 
+// Some statically-allocated variables.
 uint32_t delay_i;
+uint16_t adc_r;
+//float    temp_f;
+//float    temp_c;
 
 static inline void GPIOx_PP_ON(uint16_t gpiox, uint8_t pin) {
   GPIOx_REG(gpiox, GPIO_ODR) |= (1 << pin);
@@ -74,6 +86,20 @@ static inline void GPIOx_PP_OFF(uint16_t gpiox, uint8_t pin) {
 }
 static inline void GPIOx_PP_TOGGLE(uint16_t gpiox, uint8_t pin) {
   GPIOx_REG(gpiox, GPIO_ODR) ^= (1 << pin);
+}
+
+char digit_to_char(uint8_t ic) {
+  if (ic == 0) { return '0'; }
+  else if (ic == 1) { return '1'; }
+  else if (ic == 2) { return '2'; }
+  else if (ic == 3) { return '3'; }
+  else if (ic == 4) { return '4'; }
+  else if (ic == 5) { return '5'; }
+  else if (ic == 6) { return '6'; }
+  else if (ic == 7) { return '7'; }
+  else if (ic == 8) { return '8'; }
+  else if (ic == 9) { return '9'; }
+  else { return 'C'; }
 }
 
 static inline void set_gpio_pp(uint16_t gpio_bank, uint8_t pin) {
@@ -257,6 +283,18 @@ void draw_7s_digit(volatile char c,
   }
 }
 
+// (Thanks for the ADC and STM8 info, lujji!)
+uint16_t ADC_read() {
+  uint8_t adcH, adcL;
+  ADC1_CR1 |=  (0x01);
+  while (!(ADC1_CSR & (0x80)));
+  adcL = ADC1_DRL;
+  adcH = ADC1_DRH;
+  // (Clear the EOC flag manually)
+  ADC1_CSR &= ~(0x80);
+  return (adcL | (adcH << 8));
+}
+
 void main() {
   // Setup GPIO pins.
   // Relay control pin.
@@ -273,12 +311,18 @@ void main() {
   set_gpio_pp(GPIOD_BASE, SEG_LD_PD);
   set_gpio_pp(GPIOD_BASE, SEG_LE_PD);
   set_gpio_pp(GPIOD_BASE, SEG_DP_PD);
-  // Resistive input element (thermistor, etc)
-  set_gpio_in(GPIOD_BASE, RES_IN_PD, 0);
   // Button input pins.
   set_gpio_in(GPIOC_BASE, KEY_SET_PC, 1);
   set_gpio_in(GPIOC_BASE, KEY_PLS_PC, 1);
   set_gpio_in(GPIOC_BASE, KEY_MIN_PC, 1);
+
+  // Start up the ADC. (Pin D6 is channel 6)
+  ADC1_CSR  &=  (0xF0);
+  ADC1_CSR  |=  (0x06);
+  // Configure the ADC to store data in LSB format.
+  ADC1_CR2  |=  (0x08);
+  // Turn the ADC on.
+  ADC1_CR1  |=  (0x01);
 
   // Main loop.
   while (1) {
@@ -296,11 +340,28 @@ void main() {
 
     /* Test 2: Draw 'VVC' to the 7-segment display. */
     #define VVC_W1209_TEST2 (1)
-    //#undef VVC_W1209_TEST2
+    #undef VVC_W1209_TEST2
     #ifdef VVC_W1209_TEST2
-      draw_7s_digit('6', 0, 0);
-      draw_7s_digit('7', 1, 1);
-      draw_7s_digit('9', 2, 0);
+      draw_7s_digit('V', 0, 0);
+      draw_7s_digit('V', 1, 0);
+      draw_7s_digit('C', 2, 1);
+    #endif
+
+    /* Test 3: Draw the ADC value read from the input element. */
+    #define VVC_W1209_TEST3 (1)
+    //#undef VVC_W1209_TEST3
+    #ifdef VVC_W1209_TEST3
+      adc_r = ADC_read();
+      if (adc_r >= 999) {
+        draw_7s_digit('9', 0, 0);
+        draw_7s_digit('9', 1, 0);
+        draw_7s_digit('9', 2, 0);
+      }
+      else {
+        draw_7s_digit(digit_to_char((adc_r / 100) % 10), 0, 0);
+        draw_7s_digit(digit_to_char((adc_r / 10) % 10), 1, 0);
+        draw_7s_digit(digit_to_char((adc_r) % 10), 2, 0);
+      }
     #endif
   }
 }

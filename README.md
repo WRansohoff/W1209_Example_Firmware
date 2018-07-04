@@ -2,9 +2,9 @@
 
 Test program for the cheap STM8-based W1209 temperature control board.
 
-Currently just a test firmware. It can toggle the pin connected to the relay and LED, or draw to the 3-digit 7-segment LED displays.
+Currently just a test firmware. It can toggle the pin connected to the relay and LED, draw to the 3-digit 7-segment LED displays, or read the raw ADC value on its resistive input and print the result to the 7-segment display.
 
-The resistive input and button pins are initialized, but unused.
+The three button pins are initialized as inputs with pull-ups, but they are currently unused.
 
 # Running it
 
