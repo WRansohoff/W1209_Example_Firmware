@@ -243,19 +243,19 @@ uint16_t ADC_read() {
 void main() {
   // Setup GPIO pins.
   // Relay control pin.
-  set_gpio_pp(GPIOA_BASE, RELAY_PA);
+  set_gpio_pp(RELAY_PIN);
   // 7-Segment LED display pins.
-  set_gpio_pp(GPIOA_BASE, SEG_LB_PA);
-  set_gpio_pp(GPIOA_BASE, SEG_LF_PA);
-  set_gpio_pp(GPIOB_BASE, SEG_D2_PB);
-  set_gpio_pp(GPIOB_BASE, SEG_D3_PB);
-  set_gpio_pp(GPIOC_BASE, SEG_LC_PC);
-  set_gpio_pp(GPIOC_BASE, SEG_LG_PC);
-  set_gpio_pp(GPIOD_BASE, SEG_D1_PD);
-  set_gpio_pp(GPIOD_BASE, SEG_LA_PD);
-  set_gpio_pp(GPIOD_BASE, SEG_LD_PD);
-  set_gpio_pp(GPIOD_BASE, SEG_LE_PD);
-  set_gpio_pp(GPIOD_BASE, SEG_DP_PD);
+  set_gpio_pp(SEG_D1_PIN);
+  set_gpio_pp(SEG_D2_PIN);
+  set_gpio_pp(SEG_D3_PIN);
+  set_gpio_pp(SEG_LA_PIN);
+  set_gpio_pp(SEG_LB_PIN);
+  set_gpio_pp(SEG_LC_PIN);
+  set_gpio_pp(SEG_LD_PIN);
+  set_gpio_pp(SEG_LE_PIN);
+  set_gpio_pp(SEG_LF_PIN);
+  set_gpio_pp(SEG_LG_PIN);
+  set_gpio_pp(SEG_DP_PIN);
   // Button input pins.
   set_gpio_in(GPIOC_BASE, KEY_SET_PC, 1);
   set_gpio_in(GPIOC_BASE, KEY_PLS_PC, 1);
@@ -272,11 +272,11 @@ void main() {
   // Main loop.
   while (1) {
     /* Test 1: Toggle LED and Relay. */
-    //#define VVC_W1209_TEST1 (1)
+    #define VVC_W1209_TEST1 (1)
     #undef VVC_W1209_TEST1
     #ifdef VVC_W1209_TEST1
       // Toggle the LED/Relay pin's ODR register bit.
-      GPIOx_PP_TOGGLE(GPIOA_BASE, RELAY_PA);
+      GPIOx_PP_TOGGLE(RELAY_PIN);
       // Delay a bit.
       for (delay_i = 0; delay_i < (F_CPU / 18000) * RELAY_MS; ++delay_i) {
         __asm__("NOP");
