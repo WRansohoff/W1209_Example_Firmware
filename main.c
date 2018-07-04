@@ -1,5 +1,9 @@
 #include "main.h"
 
+/*
+ * Convert a number between 0-9 to a corresponding char.
+ * Return 'C' if the number is >9. Maybe 'E' would be better...
+ */
 char digit_to_char(uint8_t ic) {
   if (ic == 0) { return '0'; }
   else if (ic == 1) { return '1'; }
@@ -14,6 +18,9 @@ char digit_to_char(uint8_t ic) {
   else { return 'C'; }
 }
 
+/*
+ * Set a GPIO pin to push-pull output mode.
+ */
 static inline void set_gpio_pp(uint16_t gpio_bank, uint8_t pin) {
   // Set pin to output mode.
   GPIOx_REG(gpio_bank, GPIO_DDR) |= (1 << pin);
@@ -21,6 +28,10 @@ static inline void set_gpio_pp(uint16_t gpio_bank, uint8_t pin) {
   GPIOx_REG(gpio_bank, GPIO_CR1) |= (1 << pin);
 }
 
+/*
+ * Set a GPIO pin to digital input mode, optionally
+ * with the internal pull-up resistor enabled.
+ */
 static inline void set_gpio_in(uint16_t gpio_bank,
                                uint8_t pin,
                                volatile uint8_t pullup_en) {
@@ -35,6 +46,18 @@ static inline void set_gpio_in(uint16_t gpio_bank,
   }
 }
 
+/*
+ * Draw a single 7-segment LED display digit.
+ * The WS1209 board has 3 digits, and any combination of them
+ * can be addressed. But each selected digit will show
+ * the same 7 segments, so it is generally best to cycle
+ * through them quickly enough that the eye doesn't notice.
+ * For that reason, this method will only draw to one digit
+ * at a time. It can also light up a decimal point on each digit.
+ * 'c':       The character to display. Mostly just 0-9.
+ * 'dig':     The digit to draw to. Must be 0, 1, or 2.
+ * 'with_dp': Light up the decimal point? 0 = no.
+ */
 void draw_7s_digit(volatile char c,
                    volatile int dig,
                    volatile uint8_t with_dp) {
@@ -198,7 +221,11 @@ void draw_7s_digit(volatile char c,
   }
 }
 
-// (Thanks for the ADC and STM8 info, lujji!)
+/*
+ * Read a value from the ADC, which must have been
+ * previously initialized.
+ * (Thanks for the ADC and STM8 info, lujji!)
+ */
 uint16_t ADC_read() {
   uint8_t adcH, adcL;
   ADC1_CR1 |=  (0x01);
@@ -210,6 +237,9 @@ uint16_t ADC_read() {
   return (adcL | (adcH << 8));
 }
 
+/*
+ * Main method.
+ */
 void main() {
   // Setup GPIO pins.
   // Relay control pin.
